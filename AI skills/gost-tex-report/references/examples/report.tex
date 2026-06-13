@@ -1,0 +1,345 @@
+% -------------------------------------------------------
+%  ДОКУМЕНТ
+% -------------------------------------------------------
+\documentclass[14pt, a4paper]{extarticle}
+
+
+% -------------------------------------------------------
+%  ЛОКАЛИЗАЦИЯ И КОДИРОВКА
+% -------------------------------------------------------
+\usepackage[T2A]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[russian]{babel}
+
+
+% -------------------------------------------------------
+%  ПОЛЯ И ИНТЕРЛИНЬЯЖ  (ГОСТ 7.32)
+% -------------------------------------------------------
+\usepackage[left=3cm, right=1.5cm, top=2cm, bottom=2cm]{geometry}
+\usepackage{setspace}
+\onehalfspacing
+\usepackage{indentfirst}
+\setlength{\parindent}{1.25cm}
+
+
+% -------------------------------------------------------
+%  МАТЕМАТИКА
+% -------------------------------------------------------
+\usepackage{amsmath, amssymb, amsthm, mathtools}
+% Запрет разрыва строки на бинарных операциях и отношениях внутри $...$
+\relpenalty=10000
+\binoppenalty=10000
+
+
+% -------------------------------------------------------
+%  ГРАФИКА
+% -------------------------------------------------------
+\usepackage{graphicx}
+\graphicspath{{figures/}}
+
+\usepackage{tikz}
+\usetikzlibrary{decorations.pathreplacing, calc, arrows.meta, patterns, backgrounds}
+
+\usepackage[labelsep=endash, font=normalsize]{caption}
+\captionsetup[figure]{name=Рисунок, labelfont=normalfont, justification=centering}
+
+\usepackage{array}       % расширенные таблицы
+\usepackage{microtype}   % микровыключатель переносов
+
+
+% -------------------------------------------------------
+%  ЛИСТИНГИ КОДА
+%
+%  mcode.sty задаёт язык matlabfloz и цветовую схему для MATLAB.
+%  listings оставлен для возможного использования других языков.
+%  Наш \lstset идёт после mcode и добавляет только структурные
+%  настройки (номера строк, рамка, кириллица), не трогая цвета.
+%  \mcode{keyword} — инлайн без подчёркиваний; \lstinline|name_x| — с ними.
+% -------------------------------------------------------
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{mcode}
+\lstset{
+    basicstyle      = \ttfamily\small,
+    numbers         = left,
+    numberstyle     = \tiny\color{gray},
+    breaklines      = true,
+    showstringspaces= false,
+    frame           = single,
+    framesep        = 4pt,
+    extendedchars   = true,
+    inputencoding   = utf8,
+    % Кириллица в листингах (pdflatex + T2A)
+    literate=
+        {а}{{\selectfont\char224}}1 {б}{{\selectfont\char225}}1
+        {в}{{\selectfont\char226}}1 {г}{{\selectfont\char227}}1
+        {д}{{\selectfont\char228}}1 {е}{{\selectfont\char229}}1
+        {ж}{{\selectfont\char230}}1 {з}{{\selectfont\char231}}1
+        {и}{{\selectfont\char232}}1 {й}{{\selectfont\char233}}1
+        {к}{{\selectfont\char234}}1 {л}{{\selectfont\char235}}1
+        {м}{{\selectfont\char236}}1 {н}{{\selectfont\char237}}1
+        {о}{{\selectfont\char238}}1 {п}{{\selectfont\char239}}1
+        {р}{{\selectfont\char240}}1 {с}{{\selectfont\char241}}1
+        {т}{{\selectfont\char242}}1 {у}{{\selectfont\char243}}1
+        {ф}{{\selectfont\char244}}1 {х}{{\selectfont\char245}}1
+        {ц}{{\selectfont\char246}}1 {ч}{{\selectfont\char247}}1
+        {ш}{{\selectfont\char248}}1 {щ}{{\selectfont\char249}}1
+        {ъ}{{\selectfont\char250}}1 {ы}{{\selectfont\char251}}1
+        {ь}{{\selectfont\char252}}1 {э}{{\selectfont\char253}}1
+        {ю}{{\selectfont\char254}}1 {я}{{\selectfont\char255}}1
+        {А}{{\selectfont\char192}}1 {Б}{{\selectfont\char193}}1
+        {В}{{\selectfont\char194}}1 {Г}{{\selectfont\char195}}1
+        {Д}{{\selectfont\char196}}1 {Е}{{\selectfont\char197}}1
+        {Ж}{{\selectfont\char198}}1 {З}{{\selectfont\char199}}1
+        {И}{{\selectfont\char200}}1 {Й}{{\selectfont\char201}}1
+        {К}{{\selectfont\char202}}1 {Л}{{\selectfont\char203}}1
+        {М}{{\selectfont\char204}}1 {Н}{{\selectfont\char205}}1
+        {О}{{\selectfont\char206}}1 {П}{{\selectfont\char207}}1
+        {Р}{{\selectfont\char208}}1 {С}{{\selectfont\char209}}1
+        {Т}{{\selectfont\char210}}1 {У}{{\selectfont\char211}}1
+        {Ф}{{\selectfont\char212}}1 {Х}{{\selectfont\char213}}1
+        {Ц}{{\selectfont\char214}}1 {Ч}{{\selectfont\char215}}1
+        {Ш}{{\selectfont\char216}}1 {Щ}{{\selectfont\char217}}1
+        {Ъ}{{\selectfont\char218}}1 {Ы}{{\selectfont\char219}}1
+        {Ь}{{\selectfont\char220}}1 {Э}{{\selectfont\char221}}1
+        {Ю}{{\selectfont\char222}}1 {Я}{{\selectfont\char223}}1
+}
+
+
+% -------------------------------------------------------
+%  ГИПЕРССЫЛКИ  (грузить после большинства пакетов)
+% -------------------------------------------------------
+\usepackage[hidelinks, unicode=true]{hyperref}
+
+
+% -------------------------------------------------------
+%  ЗАГОЛОВКИ РАЗДЕЛОВ
+%
+%  \section{Заголовок}  — нумерованный раздел: «N  Заголовок», по центру;
+%    автоматически попадает в оглавление с номером.
+%  \section*{Заголовок} — ненумерованный раздел, по центру;
+%    в оглавление НЕ попадает — используй \addtoc{} вручную.
+%  \subsection{...}     — нумерация вида «N.M», выравнивание влево.
+%
+%  \addtoc{Заголовок}   — вспомогательная команда: ставит \phantomsection
+%    и добавляет запись уровня section в оглавление.
+%    Вызывать непосредственно перед соответствующим \section*{}.
+% -------------------------------------------------------
+\usepackage{titlesec}
+
+\setcounter{secnumdepth}{2}
+
+\titleformat{\section}[hang]
+    {\normalfont\filcenter}{\thesection}{0.7em}{}
+\titleformat{name=\section, numberless}[hang]
+    {\normalfont\filcenter}{}{0pt}{}
+\titlespacing*{\section}{0pt}{18pt}{14pt}
+
+\titleformat{\subsection}[hang]
+    {\normalfont}{\thesubsection}{0.7em}{}
+\titlespacing*{\subsection}{0pt}{14pt}{6pt}
+
+\newcommand{\addtoc}[1]{%
+    \phantomsection
+    \addcontentsline{toc}{section}{#1}%
+}
+
+
+% -------------------------------------------------------
+%  СОДЕРЖАНИЕ
+%
+%  Заголовок «СОДЕРЖАНИЕ» рисуется вручную перед \tableofcontents
+%  (встроенный отключён), чтобы избежать конфликтов titlesec ↔ tocloft.
+%  Нумерованные разделы отображаются с номером (ширина 2em для «1.», «2.»).
+%  Ненумерованные разделы добавляются через \addtoc{} — без \numberline.
+%  Подразделы: отступ 0pt, ширина номера 2.7em для «N.M».
+% -------------------------------------------------------
+\usepackage{tocloft}
+
+\renewcommand{\cfttoctitlefont}{}
+\renewcommand{\cftaftertoctitle}{}
+\addto\captionsrussian{\renewcommand{\contentsname}{}}
+
+\renewcommand{\cftsecleader}{\cftdotfill{\cftdotsep}}
+\renewcommand{\cftsubsecleader}{\cftdotfill{\cftdotsep}}
+
+\renewcommand{\cftsecfont}{\normalfont}
+\renewcommand{\cftsecpagefont}{\normalfont}
+\renewcommand{\cftsubsecfont}{\normalfont}
+\renewcommand{\cftsubsecpagefont}{\normalfont}
+
+\setlength{\cftsecindent}{0pt}
+\setlength{\cftsecnumwidth}{2em}
+\setlength{\cftsubsecindent}{0pt}
+\setlength{\cftsubsecnumwidth}{2.7em}
+
+
+% -------------------------------------------------------
+%  БИБЛИОГРАФИЯ  (biblatex + biber, стиль ГОСТ)
+%
+%  \AtBeginBibliography включает режим gostbibliography:
+%    — запятая после фамилии в заголовочном поле («Самарский, А. А.»)
+%    — сведения об ответственности после заглавия («/ А. А. Самарский»)
+%  Это приводит формат в соответствие с ГОСТ Р 7.0.100-2018.
+% -------------------------------------------------------
+\usepackage[autostyle]{csquotes}
+\usepackage[
+    backend   = biber,
+    bibstyle  = gost-numeric,
+    citestyle = numeric-comp,
+    language  = auto,
+    sorting   = none,
+]{biblatex}
+\addbibresource{references.bib}
+
+\AtBeginBibliography{%
+    \toggletrue{bbx:gostbibliography}%
+    \renewcommand*{\revsdnamepunct}{\addcomma}%
+    \renewcommand*{\mkgostheading}[1]{#1}%  убираем курсив с заголовочного имени
+}
+
+
+% -------------------------------------------------------
+%  СПИСКИ
+% -------------------------------------------------------
+\usepackage{enumitem}
+\setlist[itemize]{leftmargin=2cm}
+\setlist[enumerate]{leftmargin=2cm}
+
+
+% -------------------------------------------------------
+%  КОЛОНТИТУЛЫ (номер страницы снизу по центру)
+% -------------------------------------------------------
+\usepackage{fancyhdr}
+\pagestyle{plain}
+
+
+\begin{document}
+
+%==================== ТИТУЛЬНЫЙ ЛИСТ ====================
+% Все поля ниже в квадратных скобках — плейсхолдеры, заполняются под конкретную работу.
+\begin{titlepage}
+	\begin{center}
+		Министерство науки и высшего образования Российской Федерации\\[0.5ex]
+		Федеральное государственное автономное образовательное учреждение\\
+		высшего образования\\[0.5ex]
+		«[Наименование образовательной организации]»\\[1ex]
+		[НАИМЕНОВАНИЕ ИНСТИТУТА / ФАКУЛЬТЕТА]\\[0.5ex]
+		Кафедра [наименование кафедры]
+	\end{center}
+
+	\vfill
+
+	\begin{center}
+		Направление: [код] --- [наименование направления]\\[1ex]
+		Профиль: [наименование профиля]
+	\end{center}
+
+	\vfill
+
+	\begin{center}
+		[ТИП РАБОТЫ]\\[1.5ex]
+		\textbf{[Тема работы]}
+	\end{center}
+
+	\vfill
+
+	\noindent
+	\begin{tabular}{@{}p{0.45\textwidth} >{\centering\arraybackslash}p{0.3\textwidth} l@{}}
+		Студент [N] курса                                          &                            &                  \\
+		группы [номер группы]                                       &                            &                  \\
+		«\underline{\hspace{1cm}}» \underline{\hspace{2cm}} 2026 г. & \underline{\hspace{3.5cm}} & [Фамилия И. О.]   \\[0.4cm]
+
+		Научный руководитель                                        &                            &                  \\
+		[должность]                                                 &                            &                  \\
+		«\underline{\hspace{1cm}}» \underline{\hspace{2cm}} 2026 г. & \underline{\hspace{3.5cm}} & [Фамилия И. О.]   \\[0.4cm]
+
+		Заведующий кафедрой                                         &                            &                  \\
+		[учёная степень, звание]                                    &                            &                  \\
+		«\underline{\hspace{1cm}}» \underline{\hspace{2cm}} 2026 г. & \underline{\hspace{3.5cm}} & [Фамилия И. О.]   \\
+	\end{tabular}
+
+	\vfill
+
+	\begin{center}
+		[Город] --- 2026
+	\end{center}
+\end{titlepage}
+%==================== СОДЕРЖАНИЕ ====================
+\setcounter{page}{2}
+{\centering\normalfont СОДЕРЖАНИЕ\par\vspace{-1.5em}}
+\tableofcontents
+\newpage
+
+\input{content.tex}
+
+%==================== СПИСОК ИСТОЧНИКОВ ====================
+\newpage
+\addtoc{СПИСОК ИСПОЛЬЗОВАННЫХ ИСТОЧНИКОВ}
+\section*{СПИСОК ИСПОЛЬЗОВАННЫХ ИСТОЧНИКОВ}
+
+\printbibliography[heading=none]
+
+%==================== ПРИЛОЖЕНИЕ А ====================
+\newpage
+\setcounter{lstlisting}{0}
+\renewcommand{\thelstlisting}{А.\arabic{lstlisting}}
+\addtoc{ПРИЛОЖЕНИЕ А (обязательное)}
+\section*{ПРИЛОЖЕНИЕ А (обязательное)}
+\begin{center}
+	Мультипликативный шаг метода Шварца
+\end{center}
+\lstinputlisting[
+	language = Matlab,
+	label    = {lst:mult},
+	caption  = {Мультипликативный шаг (\texttt{solvers/schwartz\_mult\_step.m})}
+]{listings/schwartz_mult_step.m}
+
+%==================== ПРИЛОЖЕНИЕ Б ====================
+\newpage
+\enlargethispage{3\baselineskip}
+\setcounter{lstlisting}{0}
+\renewcommand{\thelstlisting}{Б.\arabic{lstlisting}}
+\addtoc{ПРИЛОЖЕНИЕ Б (обязательное)}
+\section*{ПРИЛОЖЕНИЕ Б (обязательное)}
+\begin{center}
+	Аддитивный шаг метода Шварца
+\end{center}
+\lstinputlisting[
+	language    = Matlab,
+	label       = {lst:add},
+	caption     = {Аддитивный шаг (\texttt{solvers/schwartz\_add\_step.m})},
+	basicstyle  = \ttfamily\footnotesize
+]{listings/schwartz_add_step.m}
+
+%==================== ПРИЛОЖЕНИЕ В ====================
+\newpage
+\setcounter{lstlisting}{0}
+\renewcommand{\thelstlisting}{В.\arabic{lstlisting}}
+\addtoc{ПРИЛОЖЕНИЕ В (обязательное)}
+\section*{ПРИЛОЖЕНИЕ В (обязательное)}
+\begin{center}
+	Нелинейное распределение узлов сетки
+\end{center}
+\lstinputlisting[
+	language = Matlab,
+	label    = {lst:warped},
+	caption  = {Нелинейная сетка (\texttt{utils/warped\_linspace.m})}
+]{listings/warped_linspace.m}
+
+%==================== ПРИЛОЖЕНИЕ Г ====================
+\newpage
+\setcounter{lstlisting}{0}
+\renewcommand{\thelstlisting}{Г.\arabic{lstlisting}}
+\addtoc{ПРИЛОЖЕНИЕ Г (обязательное)}
+\section*{ПРИЛОЖЕНИЕ Г (обязательное)}
+\begin{center}
+	Основной итерационный цикл одномерного метода
+\end{center}
+\lstinputlisting[
+	language = Matlab,
+	label    = {lst:main},
+	caption  = {Основной цикл (фрагмент \texttt{scripts/schwartz\_1d\_symmetrical.m})}
+]{listings/main_loop.m}
+
+\end{document}
