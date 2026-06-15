@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Обнаружение дефектов на листах картона с использованием моделей семейства YOLO</title>
+    <link rel="stylesheet" href="vendor/reveal/dist/reveal.css">
+    <link rel="stylesheet" href="vendor/reveal/dist/theme/white.css" id="theme">
+    <link rel="stylesheet" href="vendor/fonts/pt-sans.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="reveal">
+<div class="slides">
+
+<!-- ========== Слайд 1: Титульный ========== -->
+<section data-background-color="#00549F">
+    <div class="slide-title">
+        <div class="org">
+            Министерство науки и высшего образования РФ<br>
+            Казанский (Приволжский) федеральный университет<br>
+            <strong>Институт вычислительной математики и информационных технологий</strong>
+            <span style="display:block; font-size:18px; margin-top:4px; opacity:0.9;">Кафедра прикладной математики и искусственного интеллекта</span>
+        </div>
+
+        <div class="work-type">Магистерская диссертация</div>
+
+        <h1>Обнаружение дефектов на&nbsp;листах картона с&nbsp;использованием моделей семейства YOLO</h1>
+
+        <div class="meta">
+            <div>
+                <div class="label">Студент 2 курса, гр. 09-425</div>
+                <div class="value">Д.Д. Онищенко</div>
+                <div class="label" style="margin-top:14px;">Направление</div>
+                <div style="font-size:16px;">01.04.04 — Прикладная математика<br>Вычислительная геометрия и&nbsp;высокопроизводительные вычисления</div>
+            </div>
+            <div>
+                <div class="label">Научный руководитель</div>
+                <div class="value">А.А. Саламатин</div>
+                <div style="font-size:16px; opacity:0.9;">к.ф.-м.н., доцент</div>
+            </div>
+        </div>
+
+        <div class="city">Казань · 2026</div>
+    </div>
+    <aside class="notes">
+        Здравствуйте, уважаемые члены комиссии. Меня зовут Онищенко Даниил, гр. 09-425. Тема моей работы — «Обнаружение дефектов на листах картона с использованием моделей семейства YOLO». Научный руководитель — кандидат физико-математических наук, доцент Саламатин Артур Анатольевич. Расскажу о проблеме, о моём решении и о полученных результатах.
+    </aside>
+</section>
+
+<!-- ========== Слайд 2: Актуальность ========== -->
+<section>
+    <div class="slide-header">
+        <div class="kfu-logo"></div>
+        <h2>Актуальность</h2>
+    </div>
+    <div class="slide-subtitle">Брак в производстве гофрокартона</div>
+    <div class="slide-body">
+        <div class="row">
+            <div class="col" style="flex: 1.2;">
+                <div class="callout-row">
+                    <div class="callout">
+                        <div class="big-num">10%</div>
+                        <div class="label">отраслевой стандарт<br>доли брака в ЦБП</div>
+                    </div>
+                    <div class="callout">
+                        <div class="big-num">≈ 10 млн ₽</div>
+                        <div class="label">потерь в год<br>на типовой завод</div>
+                    </div>
+                </div>
+                <p style="font-size:18px; color:var(--kfu-muted); margin-top:6px;">
+                    Расчёт для завода с&nbsp;объёмом <strong>10 млн листов/год</strong> при цене <strong>~10 ₽</strong> за лист.
+                </p>
+                <p style="font-size:20px; margin-top:18px;">
+                    <strong>Проблема:</strong> ручной контроль медленный и&nbsp;ошибочный, простые алгоритмы машинного зрения не&nbsp;справляются с&nbsp;вариативностью текстуры, освещения и&nbsp;форм дефектов.
+                </p>
+            </div>
+            <div style="flex: 1; display: flex; align-items: center; justify-content: center;">
+                <img src="images/intro.jpg" alt="Брак в производстве картона" style="max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 6px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+            </div>
+        </div>
+    </div>
+    <div class="slide-footer"><span>Д.Д. Онищенко</span><span>2 / 15</span></div>
+    <aside class="notes">
+        В целлюлозно-бумажной промышленности доля брака при производстве гофрокартона — около 10% от общего объёма продукции. Это отраслевой стандарт, подтверждённый исследованиями. Для типового завода с объёмом производства 10 миллионов листов в год при средней цене 10 рублей за лист это даёт около 10 миллионов рублей потерь ежегодно.
+
+        Традиционные методы — ручной контроль или простые алгоритмы машинного зрения — не справляются: производство быстрое, дефекты разнообразны по форме и размеру, освещение неравномерное, текстура картона вариативна. Поэтому актуальна задача автоматической детекции на основе глубокого обучения.
+
+        Среди современных подходов лучше всего подходит семейство YOLO — одностадийные детекторы, способные работать в реальном времени.
+    </aside>
+</section>
+
+<!-- ========== Слайд 3: Цель и задачи ========== -->
+<section>
+    <div class="slide-header">
+        <div class="kfu-logo"></div>
+        <h2>Цель и задачи</h2>
+    </div>
+    <div class="slide-body no-subtitle">
+        <div style="background: var(--kfu-blue); color:#fff; padding:14px 20px; border-radius:6px; margin-bottom:18px;">
+            <div style="font-size:14px; opacity:0.85; margin-bottom:4px;">ЦЕЛЬ</div>
+            <div style="font-size:20px; line-height:1.4;">Разработать систему автоматической детекции дефектов поверхности картона в&nbsp;реальном времени на&nbsp;основе легковесных моделей YOLO и&nbsp;выбрать оптимальную модель для&nbsp;промышленного внедрения</div>
+        </div>
+        <div style="font-size:18px; color:var(--kfu-muted); font-weight:700; margin-bottom:8px;">ЗАДАЧИ</div>
+        <ul class="tasks-list">
+            <li>Проанализировать архитектуру моделей семейства YOLO и&nbsp;обосновать выбор легковесных версий (nano / tiny)</li>
+            <li>Подготовить и&nbsp;предобработать датасет (1056 изображений, разбиение 7:2:1)</li>
+            <li>Выполнить байесовскую оптимизацию гиперпараметров</li>
+            <li>Сравнить 5&nbsp;моделей (YOLOv8n, v8n&nbsp;tuned, v9t, v10n, v11n) со&nbsp;статистическим обоснованием выбора</li>
+            <li>Разработать рекомендации по&nbsp;внедрению на&nbsp;конвейерных линиях и&nbsp;оценить экономический потенциал</li>
+        </ul>
+    </div>
+    <div class="slide-footer"><span>Д.Д. Онищенко</span><span>3 / 15</span></div>
+    <aside class="notes">
+        Цель работы — разработать систему автоматической детекции дефектов поверхности картона в реальном времени на основе легковесных моделей YOLO и выбрать оптимальную модель для промышленного внедрения.
+
+        Для достижения цели поставлено пять задач:
+        первая — проанализировать архитектуру семейства YOLO и обосновать выбор легковесных версий;
+        вторая — подготовить датасет из 1056 изображений с разбиением 7 к 2 к 1;
+        третья — выполнить байесовскую оптимизацию гиперпараметров;
+        четвёртая — сравнить пять моделей со статистическим обоснованием выбора;
+        пятая — разработать рекомендации по внедрению и оценить экономику.
+
+        Объект исследования — процесс контроля качества картонной упаковки. Предмет — методы автоматической детекции поверхностных дефектов на основе глубокого обучения.
+    </aside>
+</section>
+
+<!-- ========== Слайд 4: Архитектура YOLOv8 ========== -->
+<section>
+    <div class="slide-header">
+        <div class="kfu-logo"></div>
+        <h2>Архитектура YOLOv8</h2>
+    </div>
+    <div class="slide-subtitle">Backbone → Neck → Head</div>
+    <div class="slide-body">
+        <div class="row">
+            <div style="flex: 2;">
+                <img src="images/image30.png" alt="Архитектура YOLOv8">
+                <div class="fig-caption">Рисунок 1 — Архитектура YOLOv8</div>
+            </div>
+            <div class="col arch-cards" style="flex: 1;">
+                <div class="stage-card">
+                    <h3>Backbone</h3>
+                    <ul>
+                        <li>Извлечение признаков</li>
+                        <li>C2f-блоки (Cross Stage Partial)</li>
+                        <li>SPPF — расширение поля зрения</li>
+                    </ul>
+                </div>
+                <div class="stage-card">
+                    <h3>Neck</h3>
+                    <ul>
+                        <li>FPN (top-down) + PAN (bottom-up)</li>
+                        <li>Объединение признаков разных масштабов</li>
+                    </ul>
+                </div>
+                <div class="stage-card">
+                    <h3>Head</h3>
+                    <ul>
+                        <li>Anchor-free предсказание</li>
+                        <li>Bbox + класс + уверенность</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="slide-footer"><span>Д.Д. Онищенко</span><span>4 / 15</span></div>
+    <aside class="notes">
+        YOLOv8 — одностадийный детектор, который одновременно выполняет классификацию и локализацию объектов. Архитектурно состоит из трёх частей.
+
+        Backbone извлекает признаки. Это последовательность свёрток и C2f-блоков — модификации Cross Stage Partial, где часть признаков пропускается напрямую через skip-connection, а часть проходит через свёртки, после чего объединяются. На выходе backbone стоит SPPF — Spatial Pyramid Pooling Fast — он расширяет рецептивное поле сети с помощью последовательных пуллингов, что позволяет видеть объекты разных масштабов.
+
+        Neck — это связка FPN и PAN. FPN строит иерархию признаков сверху вниз, PAN добавляет обратный путь снизу вверх. Это улучшает локализацию мелких объектов — а у нас дефекты бывают самых разных размеров.
+
+        Head — anchor-free, выдаёт координаты боксов, класс и уверенность.
+
+        Именно компактность и эффективность этой архитектуры позволяет работать в реальном времени.
+    </aside>
+</section>
+
+<!-- ========== Слайд 5: Функция потерь — часть 1 ========== -->
+<section>
+    <div class="slide-header">
+        <div class="kfu-logo"></div>
+        <h2>Функция потерь YOLOv8 · 1 из&nbsp;2</h2>
+    </div>
+    <div class="slide-subtitle">Классификация и&nbsp;регрессия боксов</div>
+    <div class="slide-body">
+        <div class="formula-block">
+            <div class="formula-label">Классификация — бинарная кросс-энтропия</div>
+            \[ L_{\text{cls}} = - \sum_{c=1}^{C} \left[ y_c \log(p_c) + (1 - y_c) \log(1 - p_c) \right] \]
+            <p style="font-size:16px; color:var(--kfu-muted); margin-top:6px;">
+                Для каждого позитивного бокса: \( p_c \) — предсказанная вероятность класса, \( y_c \in \{0, 1\} \) — истинная метка. Штраф растёт, когда модель ошибается.
+            </p>
+        </div>
+        <div class="formula-block">
+            <div class="formula-label">Регрессия боксов — Complete IoU</div>
+            \[ L_{\text{CIoU}} = 1 - \text{IoU} + \frac{\rho^2(b, b^{gt})}{c^2} + \alpha v \]
+            <p style="font-size:16px; color:var(--kfu-muted); margin-top:6px;">
+                Учитывает одновременно: перекрытие (IoU), расстояние между центрами (\( \rho^2/c^2 \)) и согласованность соотношения сторон (\( \alpha v \)).
+            </p>
+        </div>
+    </div>
+    <div class="slide-footer"><span>Д.Д. Онищенко</span><span>5 / 15</span></div>
+    <aside class="notes">
+        При обучении оптимизируется комбинированная функция потерь из трёх компонентов. На этом слайде — первые два.
+
+        Первый — классификационная потеря на основе бинарной кросс-энтропии. Она измеряет, насколько правильно модель определяет класс объекта.
+
+        Второй — потеря регрессии боксов, Complete IoU. Это улучшение обычного IoU: помимо площади пересечения учитывается расстояние между центрами предсказанной и истинной рамок (через ро в квадрате) и согласованность соотношения сторон (через v и альфу). Это даёт более точную локализацию.
+    </aside>
+</section>
+
+<!-- ========== Слайд 6: Функция потерь — часть 2 ========== -->
+<section>
+    <div class="slide-header">
+        <div class="kfu-logo"></div>
+        <h2>Функция потерь YOLOv8 · 2 из&nbsp;2</h2>
+    </div>
+    <div class="slide-subtitle">Distribution Focal Loss и&nbsp;итоговая комбинация</div>
+    <div class="slide-body">
+        <div class="formula-block">
+            <div class="formula-label">Distribution Focal Loss — позиции как распределение</div>
+            \[ L_{\text{DFL}} = - \big( (y_{i+1} - y) \log(S_i) + (y - y_i) \log(S_{i+1}) \big) \]
+            <p style="font-size:16px; color:var(--kfu-muted); margin-top:6px;">
+                Координаты бокса моделируются как дискретное распределение на сетке точек \( y_0, \dots, y_n \). \( S_i \) — предсказанные вероятности, истинное \( y \) лежит между \( y_i \) и \( y_{i+1} \). Позволяет учитывать неопределённость границ.
+            </p>
+        </div>
+        <div class="callout" style="margin-top:30px; padding:24px;">
+            <div style="font-size:16px; opacity:0.9; margin-bottom:8px;">ОБЩАЯ ФУНКЦИЯ ПОТЕРЬ</div>
+            \( L = 7.5 \cdot L_{\text{CIoU}} + 0.5 \cdot L_{\text{cls}} + 1.5 \cdot L_{\text{DFL}} \)
+            <div style="font-size:15px; opacity:0.9; margin-top:10px;">
+                Регрессия доминирует (вес 7.5) — точная локализация дефекта критична для промышленного применения.
+            </div>
+        </div>
+    </div>
+    <div class="slide-footer"><span>Д.Д. Онищенко</span><span>6 / 15</span></div>
+    <aside class="notes">
+        Третий компонент — Distribution Focal Loss. Здесь координаты бокса моделируются не точечно, а как дискретное распределение. Это позволяет учитывать неопределённость и повышает точность.
+
+        Общая функция — взвешенная сумма с коэффициентами 7.5 (CIoU), 0.5 (cls) и 1.5 (DFL) — это дефолты из конфига Ultralytics. Регрессия имеет наибольший вес, потому что точная локализация дефекта критична для производства.
+    </aside>
+</section>
+
+<!-- ========== Слайд 7: Датасет ========== -->
+<section>
+    <div class="slide-header">
+        <div class="kfu-logo"></div>
+        <h2>Датасет</h2>
+    </div>
+    <div class="slide-subtitle">1056 изображений · 640×640 · 1&nbsp;класс «defect» · split 7:2:1</div>
+    <div class="slide-body">
+        <div class="three-col">
+            <figure>
+                <img src="images/image31.png" alt="Царапины">
+                <div class="fig-caption">(а) Царапины</div>
+            </figure>
+            <figure>
+                <img src="images/image32.png" alt="Вмятины">
+                <div class="fig-caption">(б) Вмятины</div>
+            </figure>
+            <figure>
+                <img src="images/image34.png" alt="Разрывы">
+                <div class="fig-caption">(в) Разрывы</div>
+            </figure>
+        </div>
+        <p style="margin-top:14px; font-size:18px; color:var(--kfu-muted);">
+            <strong>Pascal VOC → YOLO format.</strong> Все типы дефектов объединены в&nbsp;один класс — для&nbsp;производства важен сам факт дефекта, а&nbsp;не&nbsp;его природа. Расширенная валидация (20%) — для&nbsp;надёжного подбора гиперпараметров.
+        </p>
+    </div>
+    <div class="slide-footer"><span>Д.Д. Онищенко</span><span>7 / 15</span></div>
+    <aside class="notes">
+        Использован открытый датасет из работы Yang et al. — 1056 изображений с разрешением 640 на 640 пикселей. Три типа дефектов: царапины — поверхностные механические повреждения, вмятины — локальные деформации материала, разрывы — нарушения структуры картона.
+
+        Важный момент: в работе все дефекты объединены в один класс «defect». Это сделано осознанно — для конвейерного производства важен сам факт наличия дефекта, чтобы отбраковать лист, а не его конкретная природа.
+
+        Разметка из формата Pascal VOC сконвертирована в YOLO-формат — компактные текстовые файлы с нормализованными координатами.
+
+        Разбиение 7:2:1 вместо стандартного 8:1:1: увеличенная валидационная выборка в 20% даёт более надёжную оценку при подборе гиперпараметров и снижает риск переобучения.
+    </aside>
+</section>
+
+<!-- ========== Слайд 7: Подбор гиперпараметров ========== -->
+<section>
+    <div class="slide-header">
+        <div class="kfu-logo"></div>
+        <h2>Подбор гиперпараметров</h2>
+    </div>
+    <div class="slide-subtitle">Байесовская оптимизация</div>
+    <div class="slide-body">
+        <div class="row">
+            <div class="col" style="flex:1;">
+                <div class="stage-card">
+                    <h3>Метод Байеса</h3>
+                    <ul>
+                        <li>Гауссовский процесс моделирует зависимость метрики от&nbsp;гиперпараметров</li>
+                        <li>Максимизация ожидаемого улучшения</li>
+                        <li>Эффективнее grid&nbsp;/ random search</li>
+                    </ul>
+                </div>
+                <p style="font-size:17px; margin-top:14px;">
+                    <strong>Базовая модель:</strong> YOLOv8n — оптимальный баланс скорости и&nbsp;качества; более крупные версии (s/m/l/x) не&nbsp;дают прироста на&nbsp;малом датасете.
+                </p>
+                <p style="font-size:17px;">
+                    <strong>Финальное обучение:</strong> 50 эпох — достаточно для&nbsp;стабильной сходимости.
+                </p>
+            </div>
+            <div style="flex:1;">
+                <table>
+                    <thead>
+                        <tr><th>Гиперпараметр</th><th class="num">Диапазон</th><th class="num">Итог</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>lr0</td><td class="num">[10⁻⁵, 10⁻²]</td><td class="num">0.0026</td></tr>
+                        <tr><td>lrf</td><td class="num">[0.01, 0.2]</td><td class="num">0.102</td></tr>
+                        <tr><td>momentum</td><td class="num">[0.85, 0.95]</td><td class="num">0.939</td></tr>
+                        <tr><td>weight decay</td><td class="num">[0, 0.01]</td><td class="num">0.0006</td></tr>
+                        <tr><td>warmup epochs</td><td class="num">[1, 3]</td><td class="num">2</td></tr>
+                        <tr><td>mosaic</td><td class="num">[0, 1]</td><td class="num">1.0</td></tr>
+                        <tr><td>mixup</td><td class="num">[0, 0.3]</td><td class="num">0.025</td></tr>
+                        <tr><td>fliplr</td><td class="num">[0, 0.6]</td><td class="num">0.283</td></tr>
+                        <tr><td>cos lr</td><td class="num">{F, T}</td><td class="num">True</td></tr>
+                    </tbody>
+                </table>
+                <div class="fig-caption">Таблица 1 — Ключевые гиперпараметры (всего подбиралось 19)</div>
+            </div>
+        </div>
+    </div>
+    <div class="slide-footer"><span>Д.Д. Онищенко</span><span>8 / 15</span></div>
+    <aside class="notes">
+        Для подбора гиперпараметров применён байесовский метод. В отличие от перебора по сетке или случайного поиска, он строит вероятностную модель — гауссовский процесс — зависимости целевой метрики от гиперпараметров, и на каждой итерации выбирает наиболее перспективную комбинацию по критерию ожидаемого улучшения. Это значительно сокращает число экспериментов.
+
+        Базовой выбрана YOLOv8n. Эксперименты с более крупными версиями — s, m, l, x — показали, что качество не растёт, а скорость падает: для нашего относительно небольшого датасета малая модель оптимальна.
+
+        Подбирались 19 гиперпараметров: скорость обучения и её затухание, momentum, регуляризация, разогрев и параметры аугментации. В таблице — ключевые значения. Финальное обучение — 50 эпох; больше не давало значимых улучшений.
+    </aside>
+</section>
+
+<!-- ========== Слайд 8: Сравнение моделей ========== -->
+<section>
+    <div class="slide-header">
+        <div class="kfu-logo"></div>
+        <h2>Сравнение моделей</h2>
+    </div>
+    <div class="slide-subtitle">Первичные метрики на&nbsp;тестовой выборке</div>
+    <div class="slide-body">
+        <div class="row">
+            <div style="flex:1.2;">
+                <img src="images/image29.png" alt="Сравнение моделей">
+                <div class="fig-caption">Рисунок 2 — Метрики precision, recall, mAP50, mAP50-95, FPS</div>
+            </div>
+            <div class="col" style="flex:1;">
+                <table>
+                    <thead>
+                        <tr><th>Модель</th><th class="num">mAP50</th><th class="num">FPS</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr class="highlight"><td>YOLOv8n</td><td class="num">0.944</td><td class="num">116</td></tr>
+                        <tr><td>YOLOv8n tuned</td><td class="num">0.943</td><td class="num">116</td></tr>
+                        <tr><td>YOLOv9t</td><td class="num">0.939</td><td class="num">89</td></tr>
+                        <tr><td>YOLOv10n</td><td class="num">0.912</td><td class="num">111</td></tr>
+                        <tr><td>YOLOv11n</td><td class="num">0.943</td><td class="num">85</td></tr>
+                    </tbody>
+                </table>
+                <p style="font-size:17px; margin-top:14px;">
+                    Все модели близки (precision&nbsp;>&nbsp;0.89, recall&nbsp;>&nbsp;0.85). По&nbsp;точечным замерам выбор неочевиден&nbsp;— нужна <strong>статистическая оценка</strong> с&nbsp;учётом вариативности.
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="slide-footer"><span>Д.Д. Онищенко</span><span>9 / 15</span></div>
+    <aside class="notes">
+        Обучил пять моделей: YOLOv8n с дефолтными гиперпараметрами, YOLOv8n с подобранными, YOLOv9t, YOLOv10n и YOLOv11n.
+
+        По первичным замерам все модели показывают высокое качество: precision выше 0.89, recall выше 0.85, mAP50 в диапазоне 0.91–0.94. По FPS лидируют YOLOv8n со 116 кадрами в секунду, чуть позади YOLOv10n с 111.
+
+        Однако на единичных замерах нельзя надёжно выбрать лучшую модель — значения слишком близки, и они могут случайно меняться от запуска к запуску. Поэтому я применил статистический анализ с бутстрэпом, чтобы оценить устойчивость различий.
+    </aside>
+</section>
+
+<!-- ========== Слайд 9: Статистический анализ ========== -->
+<section>
+    <div class="slide-header">
+        <div class="kfu-logo"></div>
+        <h2>Статистический анализ</h2>
+    </div>
+    <div class="slide-subtitle">Бутстрэп → 4 теста → выбор модели</div>
+    <div class="slide-body">
+        <div class="row">
+            <div class="col" style="flex:1;">
+                <div class="test-card">
+                    <span class="test-name">Bootstrap (B = 20)</span> — оценка вариативности метрики mAP50 на&nbsp;ограниченной выборке через подвыборки с&nbsp;возвращением.
+                </div>
+                <div class="test-card">
+                    <span class="test-name">Шапиро–Уилка</span> — проверка нормальности распределения mAP50: <em>какой тест применим — параметрический или нет?</em><br>
+                    <span class="test-result">YOLOv8n p=0.34, v8n&nbsp;tuned p=0.11, v9t p=0.19</span> — нормальные;<br>
+                    <span style="color:#c62828; font-weight:700;">YOLOv10n p=0.019, v11n p=0.016</span> — отклонение от&nbsp;нормальности → <strong>непараметрический тест</strong>.
+                </div>
+                <div class="test-card">
+                    <span class="test-name">Левена</span> — равенство дисперсий между моделями: <em>можно&nbsp;ли сравнивать как однородные группы?</em><br>
+                    <span class="test-result">p = 0.840</span> — дисперсии равны.
+                </div>
+            </div>
+            <div class="col" style="flex:1;">
+                <div class="test-card">
+                    <span class="test-name">Краскела–Уоллиса</span> — непараметрический аналог ANOVA: <em>есть&nbsp;ли вообще различия между ≥3 группами?</em><br>
+                    <span class="test-result">H = 46.43, p = 2 · 10⁻⁹</span> — да, различия значимы.
+                </div>
+                <div class="test-card">
+                    <span class="test-name">Манна–Уитни (попарный)</span> — между какими именно парами различия?
+                    <table style="font-size:14px; margin-top:6px;">
+                        <tbody>
+                            <tr><td>v10n vs v8n</td><td class="num">6.8·10⁻⁸</td><td>значимо</td></tr>
+                            <tr><td>v10n vs v8n tuned</td><td class="num">1.7·10⁻⁷</td><td>значимо</td></tr>
+                            <tr><td>v10n vs v9t</td><td class="num">6.8·10⁻⁸</td><td>значимо</td></tr>
+                            <tr><td>v10n vs v11n</td><td class="num">3.4·10⁻⁷</td><td>значимо</td></tr>
+                            <tr><td>v8n vs v8n tuned</td><td class="num">0.69</td><td>—</td></tr>
+                            <tr><td>v8n vs v9t</td><td class="num">0.90</td><td>—</td></tr>
+                            <tr><td>v8n vs v11n</td><td class="num">0.58</td><td>—</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="slide-footer"><span>Д.Д. Онищенко</span><span>10 / 15</span></div>
+    <aside class="notes">
+        Чтобы корректно сравнить модели, я использовал метод бутстрэпа — двадцать подвыборок с возвращением для каждой модели, для каждой подвыборки вычислил mAP50. Это даёт эмпирическое распределение метрики и позволяет учесть её вариативность.
+
+        Дальше — последовательно четыре статистических теста.
+
+        Шапиро–Уилка проверяет нормальность распределения. Это нужно для выбора инструмента: если все распределения нормальны — можно использовать параметрический ANOVA, иначе — непараметрический аналог. Для YOLOv8n, v8n tuned и v9t p-значение больше 0.05 — нормальность не отвергается. А для YOLOv10n и YOLOv11n p меньше 0.05 — нормальность отклоняется. Поэтому переходим к непараметрическим методам.
+
+        Тест Левена проверяет равенство дисперсий — это предпосылка для корректного сравнения групп. p = 0.84, дисперсии равны.
+
+        Краскела–Уоллиса — непараметрический аналог ANOVA — отвечает на вопрос: есть ли вообще хоть какие-то значимые различия между группами? Получаем p порядка 10⁻⁹ — да, различия есть. Но не говорит, между какими именно.
+
+        Поэтому применяю парный U-тест Манна–Уитни. Он показывает: YOLOv10n значимо хуже всех остальных моделей с p-значениями порядка 10⁻⁷. А вот пары между YOLOv8n, v8n tuned, v9t и v11n — все с p выше 0.05, то есть статистически они эквивалентны.
+
+        Вывод: настройка гиперпараметров не дала улучшения; v9t и v11n проигрывают по FPS. Поэтому для промышленного внедрения выбираю YOLOv8n с параметрами по умолчанию — простота интеграции при максимальной скорости.
+    </aside>
+</section>
+
+<!-- ========== Слайд 10: Финальный выбор ========== -->
+<section>
+    <div class="slide-header">
+        <div class="kfu-logo"></div>
+        <h2>Итоговая модель: YOLOv8n</h2>
+    </div>
+    <div class="slide-subtitle">Графики обучения</div>
+    <div class="slide-body">
+        <div class="callout-row">
+            <div class="callout"><div class="big-num">0.944</div><div class="label">mAP@50</div></div>
+            <div class="callout"><div class="big-num">0.682</div><div class="label">mAP@50-95</div></div>
+            <div class="callout"><div class="big-num">116</div><div class="label">FPS</div></div>
+            <div class="callout"><div class="big-num">50</div><div class="label">эпох</div></div>
+        </div>
+        <div style="height: calc(100% - 130px); margin-top: 14px;">
+            <img src="images/image33.png" alt="Графики обучения" style="height:100%;">
+        </div>
+    </div>
+    <div class="slide-footer"><span>Д.Д. Онищенко</span><span>11 / 15</span></div>
+    <aside class="notes">
+        Итоговая модель — YOLOv8n с дефолтными гиперпараметрами. Достигнуто mAP50 = 0.944, mAP50-95 = 0.682 при скорости 116 кадров в секунду. На графиках видно: лоссы на обучении и валидации устойчиво снижаются, метрики precision, recall и mAP выходят на плато примерно к 30-й эпохе. Это обосновывает выбор 50 эпох — дальнейшее обучение не даёт значимых улучшений.
+
+        Для сравнения: бейзлайн YOLOv5-S-G-B из работы Yang et al. достигает того же значения mAP50 = 0.944, но за 300 эпох. То есть мы получили эквивалентное качество в шесть раз быстрее по обучению, и с большей скоростью инференса — это результат как более удачного выбора архитектуры, так и более мощного железа.
+    </aside>
+</section>
+
+<!-- ========== Слайд 11: Внедрение ========== -->
+<section>
+    <div class="slide-header">
+        <div class="kfu-logo"></div>
+        <h2>Рекомендации по&nbsp;внедрению</h2>
+    </div>
+    <div class="slide-subtitle">Поэтапный подход</div>
+    <div class="slide-body">
+        <div class="row">
+            <div class="stage-card" style="flex:1;">
+                <h3>Этап 1 · Односторонний осмотр</h3>
+                <ul>
+                    <li><strong>Камеры:</strong> 2–4 промышленные (Basler/IDS, 4K+, 60+ FPS) над&nbsp;конвейером</li>
+                    <li><strong>Подсветка:</strong> LED структурированная</li>
+                    <li><strong>Edge:</strong> NVIDIA Jetson Orin Nano + TensorRT</li>
+                    <li><strong>Управление:</strong> PLC + пневматический отбраковщик</li>
+                    <li><strong>Задержка:</strong> 20–50 мс на&nbsp;кадр</li>
+                </ul>
+                <div class="callout" style="margin-top:10px; padding:10px;">
+                    Снижение поверхностного брака с&nbsp;<strong>10%&nbsp;→&nbsp;1–2%</strong>
+                </div>
+            </div>
+            <div class="stage-card" style="flex:1;">
+                <h3>Этап 2 · Двусторонний осмотр</h3>
+                <ul>
+                    <li><strong>Одновременный:</strong> камеры сверху&nbsp;и&nbsp;снизу + Jetson AGX&nbsp;Orin; задержка 30–70 мс</li>
+                    <li><strong>С&nbsp;переворотом:</strong> робо-флиппер (Festo/ABB); задержка ~1.5–2.5&nbsp;с/лист</li>
+                    <li>Детектируется внутренний брак (расслоение, склейка)</li>
+                </ul>
+                <p style="font-size:15px; color:var(--kfu-muted); margin-top:10px;">
+                    Переход на&nbsp;этап 2 оправдан, если оборотный брак&nbsp;>&nbsp;15–20% от&nbsp;общего.
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="slide-footer"><span>Д.Д. Онищенко</span><span>12 / 15</span></div>
+    <aside class="notes">
+        Рекомендую поэтапное внедрение.
+
+        Первый этап — односторонний осмотр лицевой стороны. Минимальные начальные затраты. Над конвейером ставятся 2–4 промышленные камеры с разрешением 4K и LED-подсветкой. Модель крутится локально на NVIDIA Jetson Orin Nano с ускорением через TensorRT — это даёт работу без задержек от облака. PLC по сигналу детектора активирует пневматический отбраковщик. Задержка на кадр 20–50 миллисекунд. Этого достаточно для конвейеров со скоростью до 5 м/с — даже с накладными расходами GigE Vision запас по FPS остаётся.
+
+        Этот этап покрывает поверхностные дефекты и снижает брак с отраслевых 10% до 1–2%.
+
+        Второй этап — двусторонний осмотр. Два варианта: одновременный — камеры снизу через прозрачную секцию или с двух сторон с синхронизацией; или с механическим переворотом флиппером Festo или ABB. Первый вариант быстрее, второй проще монтировать на существующие линии.
+
+        Переход на второй этап оправдан, если доля оборотного брака превышает 15–20% от общего — иначе ROI не окупает дополнительных затрат.
+    </aside>
+</section>
+
+<!-- ========== Слайд 13: Схема станции контроля ========== -->
+<section>
+    <div class="slide-header">
+        <div class="kfu-logo"></div>
+        <h2>Схема станции контроля</h2>
+    </div>
+    <div class="slide-subtitle">Визуализация этапа&nbsp;1: камеры · edge-AI · отбраковщик</div>
+    <div class="slide-body" style="display: flex; align-items: center; justify-content: center;">
+        <img src="images/conveyor.jpg" alt="Схема конвейерной линии с системой детекции" style="max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 8px; box-shadow: 0 6px 20px rgba(0,0,0,0.2);">
+    </div>
+    <div class="slide-footer"><span>Д.Д. Онищенко</span><span>13 / 15</span></div>
+    <aside class="notes">
+        Схематично — как это выглядит в железе. Над конвейером — промышленные камеры с LED-подсветкой. Рядом в шкафу управления — edge-AI модуль Jetson Orin с TensorRT, куда приходит видеопоток. Дальше по потоку — пневматический отбраковщик, которому PLC подаёт сигнал по триггеру детектора. Бракованный лист сдувается в отдельный лоток. Всё работает локально, без обращений в облако — задержка 20–50 мс на кадр.
+    </aside>
+</section>
+
+<!-- ========== Слайд 14: Экономика и заключение ========== -->
+<section>
+    <div class="slide-header">
+        <div class="kfu-logo"></div>
+        <h2>Экономика и&nbsp;заключение</h2>
+    </div>
+    <div class="slide-body no-subtitle">
+        <div class="row">
+            <div class="col" style="flex:1;">
+                <div class="formula-block" style="font-size:16px; padding:4px 12px; margin:3px 0;">
+                    <div class="formula-label">Инвестиции</div>
+                    \[ I(N) = N \cdot C_{\text{hw}} + C_{\text{sw}}^{(1)} + (N-1) \cdot C_{\text{sw}}^{(+)} \]
+                    <div style="font-size:11px; color:var(--kfu-muted); line-height:1.3; margin-top:1px;">
+                        \(N\) — число линий, \(C_{\text{hw}}\) — аппаратура/линия, \(C_{\text{sw}}^{(1)}\) — ПО 1-й линии, \(C_{\text{sw}}^{(+)}\) — ПО доп. линий
+                    </div>
+                </div>
+                <div class="formula-block" style="font-size:16px; padding:4px 12px; margin:3px 0;">
+                    <div class="formula-label">Сокращение расходов на брак / линия</div>
+                    \[ S_{\text{sm}} = Q \cdot d_1 \cdot p \cdot \eta \]
+                    <div style="font-size:11px; color:var(--kfu-muted); line-height:1.3; margin-top:1px;">
+                        \(d_1\) — доля дефектов, обнаруживаемых камерой (\(d_1 \approx d\) при одностороннем осмотре)
+                    </div>
+                </div>
+                <div class="formula-block" style="font-size:16px; padding:4px 12px; margin:3px 0;">
+                    <div class="formula-label">Чистая годовая экономия / линия</div>
+                    \[ S_{\text{net}} = S_{\text{la}} + S_{\text{sm}} - C_{\text{op}} \]
+                    <div style="font-size:11px; color:var(--kfu-muted); line-height:1.3; margin-top:1px;">
+                        \(S_{\text{la}}\) — экономия на контролёрах, \(C_{\text{op}} = Q(1{-}d)p\alpha + C_{\text{rem}} + C_{\text{ma}}\)
+                    </div>
+                </div>
+                <div class="formula-block" style="font-size:16px; padding:4px 12px; margin:3px 0;">
+                    <div class="formula-label">Окупаемость и ROI</div>
+                    \[ T(N) = \frac{I(N)}{S_{\text{net}}^{(N)} / 12}, \qquad \mathrm{ROI}(N) = \frac{S_{\text{net}}^{(N)} - I(N)}{I(N)} \times 100\% \]
+                    <div style="font-size:11px; color:var(--kfu-muted); line-height:1.3; margin-top:1px;">
+                        \(S_{\text{net}}^{(N)} = N \cdot S_{\text{net}}\), \(T\) — мес., ROI — % за 1-й год
+                    </div>
+                </div>
+            </div>
+            <div style="flex:1;">
+                <table>
+                    <thead>
+                        <tr><th>Показатель</th><th class="num">1 линия</th><th class="num">5 линий</th><th class="num">10 линий</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Инвестиции, млн ₽</td><td class="num">1.7–3.7</td><td class="num">6.9–14.9</td><td class="num">13.4–28.9</td></tr>
+                        <tr><td>S<sub>net</sub>, млн ₽/год</td><td class="num">5.4–9.1</td><td class="num">27–45</td><td class="num">54–91</td></tr>
+                        <tr class="highlight"><td>Окупаемость</td><td class="num">2–8 мес</td><td class="num">2–7 мес</td><td class="num">2–6 мес</td></tr>
+                    </tbody>
+                </table>
+                <div class="fig-caption">Q = 10 млн листов/год · d = 10% · p = 10 ₽</div>
+
+                <div class="conclusion-grid" style="margin-top:14px;">
+                    <div class="item">
+                        <div class="num">✓</div>
+                        Все 5&nbsp;задач выполнены
+                    </div>
+                    <div class="item">
+                        <div class="num">YOLOv8n</div>
+                        mAP50&nbsp;0.944, 116&nbsp;FPS
+                    </div>
+                    <div class="item">
+                        <div class="num">2–8 мес</div>
+                        окупаемость
+                    </div>
+                    <div class="item">
+                        <div class="num">→</div>
+                        300 эпох · больше данных · реальная линия
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="slide-footer"><span>Д.Д. Онищенко</span><span>14 / 15</span></div>
+    <aside class="notes">
+        Разработана общая экономическая модель. Инвестиции включают аппаратные затраты на каждую линию плюс программные затраты — где первая линия несёт полную стоимость разработки, а каждая следующая платит только за развёртывание и адаптацию. Это даёт экономию на масштабе.
+
+        Сокращение расходов на брак S_sm зависит от доли дефектов d₁, обнаруживаемых камерой — при одностороннем осмотре d₁ примерно равна d. Чистая годовая экономия на линию — экономия на контролёрах плюс S_sm минус потери от ложных срабатываний и обслуживание.
+
+        Для типовых параметров — 10 миллионов листов в год при цене 10 рублей и доле брака 10% — окупаемость на одну линию составляет от 2 до 8 месяцев. При масштабировании на 10 линий срок сокращается до 2–6 месяцев за счёт распределения программных затрат.
+
+        Подведу итог. Все пять задач выполнены. Главный результат — выбрана и обоснована статистически модель YOLOv8n с метриками 0.944 mAP50 и 116 FPS. Разработаны рекомендации по поэтапному внедрению и общая экономическая модель.
+
+        Перспективы: увеличение числа эпох обучения до 300, расширение датасета и тестирование в реальных производственных условиях.
+
+        Спасибо за внимание, готов ответить на ваши вопросы.
+    </aside>
+</section>
+
+<!-- ========== Слайд 13: Спасибо ========== -->
+<section data-background-color="#00549F">
+    <div class="slide-thanks">
+        <div class="kfu-logo-big"></div>
+        <h1>Спасибо за&nbsp;внимание!</h1>
+        <p class="sub">Готов ответить на&nbsp;ваши вопросы</p>
+        <div class="sig">
+            Д.Д. Онищенко · гр. 09-425<br>
+            Научный руководитель: к.ф.-м.н., доцент А.А. Саламатин<br>
+            Казань · 2026
+        </div>
+    </div>
+    <aside class="notes">
+        Финальный слайд. Поблагодарить комиссию, обозначить готовность к вопросам.
+    </aside>
+</section>
+
+</div>
+</div>
+
+<script src="vendor/reveal/dist/reveal.js"></script>
+<script src="vendor/reveal/plugin/math/math.js"></script>
+<script>
+    Reveal.initialize({
+        width: 1280,
+        height: 720,
+        margin: 0,
+        controls: true,
+        progress: true,
+        slideNumber: false,
+        hash: true,
+        center: false,
+        transition: 'slide',
+        plugins: [RevealMath.MathJax3],
+        mathjax3: {
+            mathjax: 'vendor/mathjax/tex-svg.js',
+            tex: { inlineMath: [['\\(', '\\)']] }
+        }
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,521 @@
+/* === КФУ-стиль для reveal.js === */
+/* PT Sans подгружается локально через vendor/fonts/pt-sans.css (подключается в index.html) */
+
+:root {
+    --kfu-blue: #00549F;
+    --kfu-blue-dark: #003a70;
+    --kfu-blue-light: #4a8bc9;
+    --kfu-text: #1a1a1a;
+    --kfu-muted: #5a5a5a;
+    --kfu-bg: #ffffff;
+}
+
+.reveal {
+    font-family: 'PT Sans', sans-serif;
+    font-size: 28px;
+    color: var(--kfu-text);
+    background: var(--kfu-bg);
+}
+
+.reveal .slides {
+    text-align: left;
+}
+
+.reveal h1, .reveal h2, .reveal h3, .reveal h4 {
+    font-family: 'PT Sans', sans-serif;
+    font-weight: 700;
+    color: var(--kfu-text);
+    text-transform: none;
+    text-align: left;
+    margin: 0;
+    line-height: 1.2;
+}
+
+.reveal section {
+    height: 100%;
+}
+
+/* === Шапка слайда === */
+.slide-header {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 100px;
+    background: linear-gradient(180deg, var(--kfu-blue-dark) 0%, var(--kfu-blue) 50%, var(--kfu-blue) 100%);
+    display: flex;
+    align-items: center;
+    padding: 0 30px;
+    z-index: 10;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+.slide-header .kfu-logo {
+    height: 70px;
+    width: 70px;
+    background: url('assets/kfu_logo.png') center/contain no-repeat;
+    flex-shrink: 0;
+    filter: brightness(0) invert(1);
+}
+
+.slide-header h2 {
+    color: #fff;
+    font-size: 36px;
+    margin-left: 24px;
+    font-weight: 700;
+}
+
+.slide-subtitle {
+    position: absolute;
+    top: 110px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--kfu-text);
+    padding: 8px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+/* === Тело слайда === */
+.slide-body {
+    position: absolute;
+    top: 170px;
+    left: 50px;
+    right: 50px;
+    bottom: 60px;
+    overflow: hidden;
+}
+
+.slide-body.no-subtitle {
+    top: 130px;
+}
+
+.slide-body p, .slide-body li {
+    font-size: 24px;
+    line-height: 1.5;
+}
+
+.slide-body ul, .slide-body ol {
+    margin: 10px 0 10px 24px;
+}
+
+.slide-body li {
+    margin-bottom: 8px;
+}
+
+/* === Подвал === */
+.slide-footer {
+    position: absolute;
+    bottom: 12px;
+    left: 30px;
+    right: 30px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    color: var(--kfu-muted);
+}
+
+/* === Титульный === */
+.slide-title {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: url('assets/kfu_bg.jpeg') center/cover no-repeat, var(--kfu-blue);
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 60px 80px;
+    box-sizing: border-box;
+}
+
+.slide-title .org {
+    font-size: 18px;
+    text-align: center;
+    line-height: 1.5;
+    margin-bottom: 20px;
+}
+
+.slide-title .org strong {
+    display: block;
+    margin-top: 10px;
+    font-size: 20px;
+}
+
+.slide-title .work-type {
+    font-size: 22px;
+    margin: 30px 0 14px 0;
+}
+
+.slide-title h1 {
+    color: #fff;
+    text-align: center;
+    font-size: 38px;
+    line-height: 1.3;
+    margin: 0 40px;
+    max-width: 900px;
+}
+
+.slide-title .meta {
+    margin-top: 50px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px 60px;
+    width: 100%;
+    max-width: 900px;
+    font-size: 18px;
+    line-height: 1.5;
+}
+
+.slide-title .meta .label {
+    opacity: 0.85;
+    font-size: 16px;
+    margin-bottom: 4px;
+}
+
+.slide-title .meta .value {
+    font-weight: 700;
+    font-size: 20px;
+}
+
+.slide-title .city {
+    margin-top: auto;
+    font-size: 20px;
+    font-weight: 700;
+    text-align: center;
+}
+
+/* === Плейсхолдеры под картинки === */
+.img-placeholder {
+    background: repeating-linear-gradient(45deg, #f0f4f8, #f0f4f8 10px, #e6ebf0 10px, #e6ebf0 20px);
+    border: 2px dashed var(--kfu-blue);
+    border-radius: 8px;
+    color: var(--kfu-blue);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-size: 16px;
+    font-style: italic;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.img-placeholder code {
+    background: rgba(0, 84, 159, 0.1);
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 14px;
+    margin-top: 8px;
+    display: inline-block;
+}
+
+/* === Картинки === */
+.slide-body img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    display: block;
+    margin: 0 auto;
+}
+
+.fig-caption {
+    text-align: center;
+    font-size: 16px;
+    color: var(--kfu-muted);
+    margin-top: 8px;
+    font-style: italic;
+}
+
+/* === Сетки === */
+.row {
+    display: flex;
+    gap: 24px;
+    height: 100%;
+}
+
+.row > * {
+    flex: 1;
+    min-width: 0;
+}
+
+.row.tight > * {
+    flex: 1;
+}
+
+.col {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.three-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 20px;
+    height: 100%;
+}
+
+.three-col figure {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.three-col figure img,
+.three-col figure .img-placeholder {
+    flex: 1;
+    min-height: 0;
+}
+
+/* === Таблицы === */
+.reveal table {
+    border-collapse: collapse;
+    margin: 8px 0;
+    font-size: 18px;
+    width: 100%;
+}
+
+.reveal table th {
+    background: var(--kfu-blue);
+    color: #fff;
+    padding: 8px 12px;
+    text-align: left;
+    font-weight: 700;
+}
+
+.reveal table td {
+    padding: 6px 12px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.reveal table tr.highlight td {
+    background: #fff8e1;
+    font-weight: 700;
+}
+
+.reveal table td.num,
+.reveal table th.num {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+
+/* === Акцентные блоки === */
+.callout {
+    background: linear-gradient(135deg, var(--kfu-blue) 0%, var(--kfu-blue-light) 100%);
+    color: #fff;
+    padding: 20px 28px;
+    border-radius: 8px;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0, 84, 159, 0.25);
+}
+
+.callout .big-num {
+    font-size: 56px;
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 6px;
+}
+
+.callout .label {
+    font-size: 18px;
+    opacity: 0.95;
+}
+
+.callout-row {
+    display: flex;
+    gap: 20px;
+    margin: 16px 0;
+}
+
+.callout-row .callout {
+    flex: 1;
+}
+
+.kpi {
+    display: inline-block;
+    background: var(--kfu-blue);
+    color: #fff;
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-weight: 700;
+    margin: 0 4px;
+}
+
+.kpi.green { background: #2e7d32; }
+
+/* === Формулы === */
+.formula-block {
+    background: #f5f7fa;
+    border-left: 4px solid var(--kfu-blue);
+    padding: 12px 20px;
+    margin: 10px 0;
+    font-size: 22px;
+}
+
+.formula-label {
+    font-size: 16px;
+    color: var(--kfu-muted);
+    margin-bottom: 4px;
+}
+
+/* === Этап-карточка === */
+.stage-card {
+    border: 2px solid var(--kfu-blue);
+    border-radius: 8px;
+    padding: 14px 18px;
+    height: 100%;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Внутри колонки (несколько карточек подряд) — высота по содержимому */
+.col > .stage-card {
+    height: auto;
+    flex: 0 1 auto;
+}
+
+.stage-card h3 {
+    color: var(--kfu-blue);
+    font-size: 22px;
+    margin-bottom: 10px;
+    border-bottom: 2px solid var(--kfu-blue);
+    padding-bottom: 6px;
+}
+
+.stage-card ul {
+    margin: 0;
+    padding-left: 20px;
+}
+
+.stage-card li {
+    font-size: 17px;
+    margin-bottom: 6px;
+    line-height: 1.4;
+}
+
+/* Слайд 4 (архитектура) — на 1pt меньше, чтобы 3 карточки влезли */
+.arch-cards .stage-card h3 {
+    font-size: 21px;
+}
+.arch-cards .stage-card li {
+    font-size: 16px;
+}
+
+/* === Тесты — карточки === */
+.test-card {
+    background: #f5f7fa;
+    border-left: 4px solid var(--kfu-blue);
+    padding: 10px 14px;
+    margin-bottom: 10px;
+    font-size: 17px;
+    line-height: 1.4;
+}
+
+.test-card .test-name {
+    font-weight: 700;
+    color: var(--kfu-blue);
+}
+
+.test-card .test-result {
+    color: #2e7d32;
+    font-weight: 700;
+}
+
+/* === Список задач компактный === */
+.tasks-list {
+    counter-reset: task;
+    list-style: none !important;
+    padding: 0;
+    margin-left: 0 !important;
+}
+
+.tasks-list li {
+    counter-increment: task;
+    padding: 8px 0 8px 40px;
+    position: relative;
+    font-size: 20px;
+}
+
+.tasks-list li::before {
+    content: counter(task);
+    position: absolute;
+    left: 0;
+    top: 6px;
+    width: 28px;
+    height: 28px;
+    background: var(--kfu-blue);
+    color: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 16px;
+}
+
+/* === Финальный слайд «Спасибо» === */
+.slide-thanks {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: url('assets/kfu_bg.jpeg') center/cover no-repeat, var(--kfu-blue);
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 80px;
+    box-sizing: border-box;
+    text-align: center;
+}
+
+.slide-thanks .kfu-logo-big {
+    width: 140px;
+    height: 140px;
+    background: url('assets/kfu_logo.png') center/contain no-repeat;
+    filter: brightness(0) invert(1);
+    margin-bottom: 30px;
+}
+
+.slide-thanks h1 {
+    color: #fff;
+    text-align: center;
+    font-size: 72px;
+    margin-bottom: 20px;
+}
+
+.slide-thanks .sub {
+    font-size: 28px;
+    opacity: 0.95;
+    margin-bottom: 60px;
+}
+
+.slide-thanks .sig {
+    font-size: 18px;
+    line-height: 1.7;
+    opacity: 0.9;
+    border-top: 1px solid rgba(255,255,255,0.3);
+    padding-top: 20px;
+}
+
+/* === Заключение === */
+.conclusion-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.conclusion-grid .item {
+    background: #f5f7fa;
+    padding: 14px;
+    border-radius: 6px;
+    border-left: 4px solid var(--kfu-blue);
+}
+
+.conclusion-grid .item .num {
+    color: var(--kfu-blue);
+    font-weight: 700;
+    font-size: 22px;
+}
